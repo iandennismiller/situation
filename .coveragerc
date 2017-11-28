@@ -1,0 +1,6 @@
+[run]
+source = situation
+[report]
+omit =
+    */python?.?/*
+    */site-packages/nose/*

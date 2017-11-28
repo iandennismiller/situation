@@ -1,0 +1,11 @@
+language: python
+cache: pip
+python:
+  - 2.7
+  - 3.5
+install:
+  - make dev install
+script:
+  - nosetests -w situation -c etc/tests.cfg --with-coverage --cover-package=situation
+after_success:
+  - coveralls --rcfile=.coveragerc
