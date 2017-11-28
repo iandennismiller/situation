@@ -3,9 +3,10 @@ cache: pip
 python:
   - 2.7
   - 3.5
+  - 3.6
 install:
-  - make dev install
+  - make develop install
 script:
-  - nosetests -w situation -c etc/tests.cfg --with-coverage --cover-package=situation
+  - nosetests -c etc/tests.cfg --with-coverage --cover-package=situation
 after_success:
   - coveralls --rcfile=.coveragerc

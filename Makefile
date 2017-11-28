@@ -40,9 +40,13 @@ release:
 	# 2. python setup.py register # notify pypi of new package
 	python setup.py sdist upload
 
+coverage:
+	SETTINGS=$$PWD/etc/testing.conf nosetests -c etc/tests.cfg --with-xcoverage \
+		--cover-package=$(MOD_NAME) --cover-tests
+
 # create a homebrew install script
 homebrew:
 	bin/poet-homebrew.sh
 	cp /tmp/situation.rb etc/situation.rb
 
-.PHONY: clean install test watch docs release tox develop homebrew
+.PHONY: clean install test watch docs release tox develop homebrew coverage
