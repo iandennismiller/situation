@@ -87,7 +87,7 @@ class BasicTestCase(TestCase):
 
         # print(item1.as_hash())
 
-        assert False
+        # assert False
 
     @attr("skip")
     def test_skip(self):
