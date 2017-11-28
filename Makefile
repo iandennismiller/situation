@@ -2,13 +2,17 @@
 
 SHELL=/bin/bash
 MOD_NAME=situation
-TEST_CMD=nosetests -w $(MOD_NAME) -c etc/tests.cfg --with-coverage --cover-package=$(MOD_NAME)
+TEST_CMD=SETTINGS=$$PWD/etc/testing.conf nosetests -w $(MOD_NAME)
+#  --with-coverage --cover-package=$(MOD_NAME)
 
 install:
 	python setup.py install
 
-dev:
-	pip install -r requirements-dev.txt
+requirements:
+	pip install -r requirements.txt
+
+develop:
+	pip install -r .requirements-dev.txt
 
 clean:
 	rm -rf build dist *.egg-info
@@ -20,10 +24,13 @@ docs:
 	sphinx-build -b html docs build/sphinx
 
 watch:
-	watchmedo shell-command -R -p "*.py" -c 'date; $(TEST_CMD); date' .
+	watchmedo shell-command -R -p "*.py" -c 'date; $(TEST_CMD) -c etc/tests-single.cfg; date' .
 
 test:
-	$(TEST_CMD)
+	$(TEST_CMD) -c etc/tests.cfg
+
+single:
+	$(TEST_CMD) -c etc/tests-single.cfg
 
 tox:
 	tox
@@ -38,4 +45,4 @@ homebrew:
 	bin/poet-homebrew.sh
 	cp /tmp/situation.rb etc/situation.rb
 
-.PHONY: clean install test watch docs release tox dev homebrew
+.PHONY: clean install test watch docs release tox develop homebrew
