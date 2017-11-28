@@ -21,4 +21,4 @@ def create_app():
     # application.facet("error_handlers")
     # application.facet("request_handlers")
     # application.facet("administration")
-    return(application)
+    return(application.app)
