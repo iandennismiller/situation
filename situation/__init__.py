@@ -3,7 +3,7 @@
 
 import string
 import random
-# from flask_marshmallow.fields import fields
+from flask_marshmallow.fields import fields
 from flask_diamond import db, ma
 from flask_diamond.mixins.crud import CRUDMixin
 from flask_diamond.mixins.marshmallow import MarshmallowMixin
@@ -28,13 +28,20 @@ def id_generator(size=8, chars=None):
 
 
 class ResourceSchema(ma.Schema):
-    # satellites = fields.Nested('SatelliteSchema', allow_none=True, many=True)
+    "Description"
 
     class Meta:
         additional = ("id", "unique", "name", "url", "publisher", "author", "description")
 
 
 class Resource(db.Model, CRUDMixin, MarshmallowMixin):
+    """
+    A Resource is an authoritative reference from which information is drawn.
+
+    :param id: the database object identifier
+    :type id: integer
+    """
+
     __schema__ = ResourceSchema
     id = db.Column(db.Integer, primary_key=True)
     unique = db.Column(db.String(255), unique=True, default=id_generator)
@@ -44,23 +51,26 @@ class Resource(db.Model, CRUDMixin, MarshmallowMixin):
     author = db.Column(db.String(4096))
     description = db.Column(db.String(8**7))
 
-    def as_hash(self):
-        return(self.json())
-        # h = {
-        #     "id": self.id,
-        #     "unique": self.unique,
-        #     "url": self.url,
-        #     "publisher": self.publisher,
-        #     "author": self.author,
-        #     "description": self.description,
-        # }
-        # return h
-
     def __str__(self):
-        return self.url
+        return(self.url)
+
+
+class ExcerptSchema(ma.Schema):
+    "Description"
+
+    class Meta:
+        additional = ("id", "unique", "content", "resource_id", "xpath")
 
 
 class Excerpt(db.Model, CRUDMixin, MarshmallowMixin):
+    """
+    Description.
+
+    :param id: the database object identifier
+    :type id: integer
+    """
+
+    __schema__ = ExcerptSchema
     id = db.Column(db.Integer, primary_key=True)
     unique = db.Column(db.String(255), unique=True, default=id_generator)
     content = db.Column(db.String(8**7))
@@ -68,56 +78,55 @@ class Excerpt(db.Model, CRUDMixin, MarshmallowMixin):
     resource_id = db.Column(db.Integer, db.ForeignKey('resource.id'), nullable=False)
     xpath = db.Column(db.String(4096))
 
-    def as_hash(self):
-        h = {
-            "id": self.id,
-            "unique": self.unique,
-            "content": self.content,
-            "resource_id": self.resource_id,
-            "xpath": self.xpath,
-        }
-        return h
-
     def __str__(self):
-        return self.content
+        return(self.content)
 
 
 class AcquaintanceExcerpt(db.Model, CRUDMixin):
+    "Excerpts."
+
     __tablename__ = 'acquaintance_excerpts'
     __table_args__ = (
-        db.ForeignKeyConstraint(['person_id', 'acquainted_id'], ['acquaintance.person_id',
-            'acquaintance.acquainted_id']),
-        )
+        db.ForeignKeyConstraint(
+            ['person_id', 'acquainted_id'],
+            ['acquaintance.person_id', 'acquaintance.acquainted_id']
+        ),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     excerpt_id = db.Column(db.Integer, db.ForeignKey('excerpt.id'), nullable=False)
     person_id = db.Column(db.Integer, db.ForeignKey('person.id'), nullable=False)
     acquainted_id = db.Column(db.Integer, db.ForeignKey('person.id'), nullable=False)
 
+"Excerpts."
 persons_excerpts = db.Table('persons_excerpts',
     db.Column('id', db.Integer, primary_key=True),
     db.Column('person_id', db.Integer, db.ForeignKey('person.id')),
     db.Column('excerpt_id', db.Integer, db.ForeignKey('excerpt.id'))
 )
 
+"Excerpts."
 places_excerpts = db.Table('places_excerpts',
     db.Column('id', db.Integer, primary_key=True),
     db.Column('place_id', db.Integer, db.ForeignKey('place.id')),
     db.Column('excerpt_id', db.Integer, db.ForeignKey('excerpt.id'))
 )
 
+"Excerpts."
 items_excerpts = db.Table('items_excerpts',
     db.Column('id', db.Integer, primary_key=True),
     db.Column('item_id', db.Integer, db.ForeignKey('item.id')),
     db.Column('excerpt_id', db.Integer, db.ForeignKey('excerpt.id'))
 )
 
+"Excerpts."
 events_excerpts = db.Table('events_excerpts',
     db.Column('id', db.Integer, primary_key=True),
     db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
     db.Column('excerpt_id', db.Integer, db.ForeignKey('excerpt.id'))
 )
 
+"Excerpts."
 groups_excerpts = db.Table('groups_excerpts',
     db.Column('id', db.Integer, primary_key=True),
     db.Column('group_id', db.Integer, db.ForeignKey('group.id')),
@@ -125,7 +134,37 @@ groups_excerpts = db.Table('groups_excerpts',
 )
 
 
+class PersonSchema(ma.Schema):
+    "Description"
+
+    slug = fields.Method("get_slugify")
+    excerpts = fields.Nested('ExcerptSchema', allow_none=True, many=True, only=["id"])
+    events = fields.Nested('EventSchema', allow_none=True, many=True, only=["id"])
+    places = fields.Nested('PlaceSchema', allow_none=True, many=True, only=["id"])
+    possessions = fields.Nested('ItemSchema', allow_none=True, many=True, only=["id"])
+    properties = fields.Nested('PlaceSchema', allow_none=True, many=True, only=["id"])
+    groups = fields.Nested('GroupSchema', allow_none=True, many=True, only=["id"])
+    acquaintances = fields.Nested('PersonSchema', allow_none=True, many=True, only=["id"])
+
+    # TODO: this is a nested query
+    # "encounters": [i.id for e in self.events for i in e.items],
+
+    def get_slugify(self, obj):
+        return(slugify(obj.name))
+
+    class Meta:
+        additional = ("id", "name", "alias", "unique")
+
+
 class Person(db.Model, CRUDMixin, MarshmallowMixin):
+    """
+    Description.
+
+    :param id: the database object identifier
+    :type id: integer
+    """
+
+    __schema__ = PersonSchema
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
     alias = db.Column(db.String(255))
@@ -137,29 +176,28 @@ class Person(db.Model, CRUDMixin, MarshmallowMixin):
         result = e.save()
         return result
 
-    def as_hash(self):
-        h = {
-            "id": self.id,
-            "name": self.name,
-            "alias": self.alias,
-            "slug": slugify(self.name),
-            "unique": self.unique,
-            "excerpts": [d.id for d in self.excerpts],
-            "acquaintances": [(a.acquainted_id, a.isa) for a in self.acquaintances],
-            "groups": [g.id for g in self.groups],
-            "places": [e.get_place_id() for e in self.events],
-            "events": [e.id for e in self.events],
-            "possessions": [i.id for i in self.items],
-            "properties": [p.id for p in self.properties],
-            "encounters": [i.id for e in self.events for i in e.items],
-        }
-        return h
-
     def __str__(self):
-        return self.name
+        return(self.name)
+
+
+class AcquaintanceSchema(ma.Schema):
+    "Description"
+
+    excerpts = fields.Nested('ExcerptSchema', allow_none=True, many=True, only=["id"])
+
+    class Meta:
+        additional = ("isa", "person", "acquainted")
 
 
 class Acquaintance(db.Model, CRUDMixin, MarshmallowMixin):
+    """
+    Description.
+
+    :param id: the database object identifier
+    :type id: integer
+    """
+
+    __schema__ = AcquaintanceSchema
     isa = db.Column(db.String(64))
     excerpts = db.relationship('Excerpt', secondary="acquaintance_excerpts", lazy='dynamic')
     person_id = db.Column(db.Integer(), db.ForeignKey('person.id'), primary_key=True)
@@ -175,23 +213,34 @@ class Acquaintance(db.Model, CRUDMixin, MarshmallowMixin):
             )
         return annotation
 
-    def as_hash(self):
-        h = {
-            "isa": self.isa,
-            "person": self.person_id,
-            "acquainted": self.acquainted_id,
-            "excerpts": [d.id for d in self.excerpts],
-        }
-        return h
-
-    def __repr__(self):
-        return self.__str__()
-
     def __str__(self):
-        return "%s isa %s of %s)" % (self.person, self.isa, self.acquainted)
+        return("%s isa %s of %s)" % (self.person, self.isa, self.acquainted))
+
+
+class PlaceSchema(ma.Schema):
+    "Description"
+
+    slug = fields.Method("get_slugify")
+    excerpts = fields.Nested('ExcerptSchema', allow_none=True, many=True, only=["id"])
+    events = fields.Nested('EventSchema', allow_none=True, many=True, only=["id"])
+    owners = fields.Nested('PersonSchema', allow_none=True, many=True, only=["id"])
+
+    def get_slugify(self, obj):
+        return(slugify(obj.name))
+
+    class Meta:
+        additional = ("id", "unique", "name", "description", "address", "lat", "lon")
 
 
 class Place(db.Model, CRUDMixin, MarshmallowMixin):
+    """
+    Description.
+
+    :param id: the database object identifier
+    :type id: integer
+    """
+
+    __schema__ = PlaceSchema
     id = db.Column(db.Integer, primary_key=True)
     unique = db.Column(db.String(255), unique=True, default=id_generator)
     name = db.Column(db.String(255))
@@ -203,24 +252,8 @@ class Place(db.Model, CRUDMixin, MarshmallowMixin):
         backref="properties")
     excerpts = db.relationship('Excerpt', secondary="places_excerpts", lazy='dynamic')
 
-    def as_hash(self):
-        h = {
-            "id": self.id,
-            "unique": self.unique,
-            "name": self.name,
-            "slug": slugify(self.name),
-            "description": self.description,
-            "address": self.address,
-            "events": [e.id for e in self.events],
-            "lat": self.lat,
-            "lon": self.lon,
-            "owners": [o.id for o in self.owners],
-            "excerpts": [d.id for d in self.excerpts],
-        }
-        return h
-
     def __str__(self):
-        return self.name
+        return(self.name)
 
 places_owners = db.Table('places_owners',
     db.Column('id', db.Integer, primary_key=True),
@@ -229,7 +262,29 @@ places_owners = db.Table('places_owners',
 )
 
 
+class ItemSchema(ma.Schema):
+    "Description"
+
+    slug = fields.Method("get_slugify")
+    excerpts = fields.Nested('ExcerptSchema', allow_none=True, many=True, only=["id"])
+    owners = fields.Nested('PersonSchema', allow_none=True, many=True, only=["id"])
+
+    def get_slugify(self, obj):
+        return(slugify(obj.name))
+
+    class Meta:
+        additional = ("id", "unique", "name", "description")
+
+
 class Item(db.Model, CRUDMixin, MarshmallowMixin):
+    """
+    Description.
+
+    :param id: the database object identifier
+    :type id: integer
+    """
+
+    __schema__ = ItemSchema
     id = db.Column(db.Integer, primary_key=True)
     unique = db.Column(db.String(255), unique=True, default=id_generator)
     name = db.Column(db.String(255))
@@ -237,20 +292,8 @@ class Item(db.Model, CRUDMixin, MarshmallowMixin):
     owners = db.relationship('Person', secondary="items_owners", lazy='dynamic', backref="items")
     excerpts = db.relationship('Excerpt', secondary="items_excerpts", lazy='dynamic')
 
-    def as_hash(self):
-        h = {
-            "id": self.id,
-            "unique": self.unique,
-            "name": self.name,
-            "slug": slugify(self.name),
-            "description": self.description,
-            "owners": [o.id for o in self.owners],
-            "excerpts": [d.id for d in self.excerpts],
-        }
-        return h
-
     def __str__(self):
-        return self.name
+        return(self.name)
 
 items_owners = db.Table('items_owners',
     db.Column('id', db.Integer, primary_key=True),
@@ -259,24 +302,33 @@ items_owners = db.Table('items_owners',
 )
 
 
+class GroupSchema(ma.Schema):
+    slug = fields.Method("get_slugify")
+    excerpts = fields.Nested('ExcerptSchema', allow_none=True, many=True, only=["id"])
+    members = fields.Nested('PersonSchema', allow_none=True, many=True, only=["id"])
+
+    def get_slugify(self, obj):
+        return(slugify(obj.name))
+
+    class Meta:
+        additional = ("id", "unique", "name")
+
+
 class Group(db.Model, CRUDMixin, MarshmallowMixin):
+    """
+    Description.
+
+    :param id: the database object identifier
+    :type id: integer
+    """
+
+    __schema__ = GroupSchema
     id = db.Column(db.Integer, primary_key=True)
     unique = db.Column(db.String(255), unique=True, default=id_generator)
     name = db.Column(db.String(255))
     members = db.relationship('Person', secondary="groups_members", lazy='dynamic',
         backref="groups")
     excerpts = db.relationship('Excerpt', secondary="groups_excerpts", lazy='dynamic')
-
-    def as_hash(self):
-        h = {
-            "id": self.id,
-            "unique": self.unique,
-            "name": self.name,
-            "slug": slugify(self.name),
-            "members": [m.id for m in self.members],
-            "excerpts": [d.id for d in self.excerpts],
-        }
-        return h
 
     def __str__(self):
         return self.name
@@ -288,7 +340,32 @@ groups_members = db.Table('groups_members',
 )
 
 
+class EventSchema(ma.Schema):
+    slug = fields.Method("get_slugify")
+    timestamp = fields.Method("get_timestamp")
+    excerpts = fields.Nested('ExcerptSchema', allow_none=True, many=True, only=["id"])
+    items = fields.Nested('ItemSchema', allow_none=True, many=True, only=["id"])
+    actors = fields.Nested('PersonSchema', allow_none=True, many=True, only=["id"])
+
+    def get_slugify(self, obj):
+        return(slugify(obj.name))
+
+    def get_timestamp(self, obj):
+        return(obj.timestamp.strftime('%Y-%m-%dT%H:%M:%S'))
+
+    class Meta:
+        additional = ("id", "unique", "name", "phone", "description", "place_id")
+
+
 class Event(db.Model, CRUDMixin, MarshmallowMixin):
+    """
+    Description.
+
+    :param id: the database object identifier
+    :type id: integer
+    """
+
+    __schema__ = EventSchema
     id = db.Column(db.Integer, primary_key=True)
     unique = db.Column(db.String(255), unique=True, default=id_generator)
     name = db.Column(db.String(255))
@@ -300,26 +377,6 @@ class Event(db.Model, CRUDMixin, MarshmallowMixin):
     actors = db.relationship('Person', secondary="events_actors", lazy='dynamic', backref="events")
     excerpts = db.relationship('Excerpt', secondary="events_excerpts", lazy='dynamic')
     items = db.relationship('Item', secondary="events_items", lazy='dynamic')
-
-    def get_place_id(self):
-        if self.place:
-            return self.place.id
-
-    def as_hash(self):
-        h = {
-            "id": self.id,
-            "unique": self.unique,
-            "name": self.name,
-            "slug": slugify(self.name),
-            "phone": self.phone,
-            "description": self.description,
-            "place_id": self.place_id,
-            "timestamp": self.timestamp.strftime('%Y-%m-%dT%H:%M:%S'),
-            "actors": [a.id for a in self.actors],
-            "items": [i.id for i in self.items],
-            "excerpts": [d.id for d in self.excerpts],
-        }
-        return h
 
     def __str__(self):
         return self.name
