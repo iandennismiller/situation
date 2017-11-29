@@ -8,3 +8,11 @@ Introduction
 
     license
     changelog
+
+Development
+-----------
+
+.. toctree::
+    :maxdepth: 3
+
+    api

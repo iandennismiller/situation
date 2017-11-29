@@ -17,10 +17,8 @@ def id_generator(size=8, chars=None):
     """
     Create a random sequence of letters and numbers.
 
-    :param size: the desired length of the sequence
-    :type size: integer
-    :param chars: the eligible character set to draw from when picking random characters
-    :type chars: string
+    :param int size: the desired length of the sequence
+    :param str chars: the eligible character set to draw from when picking random characters
     :returns: a string with the random sequence
     """
     if chars is None:
@@ -29,7 +27,12 @@ def id_generator(size=8, chars=None):
 
 
 def dump():
-    # save all the people and everything else
+    """
+    Build a dictionary containing the entire Situation.
+
+    :returns: a Dict with the situation as nested Dictionaries.
+    """
+    "save all the people and everything else"
     return({
         "persons": [p.dump() for p in Person.query.order_by(Person.id).all()],
         "acquaintances": [a.dump() for a in Acquaintance.query.order_by(Acquaintance.person_id,
@@ -45,6 +48,11 @@ def dump():
 
 
 def save(filename):
+    """
+    Write the Situation to a JSON file.
+
+    :param str filename: the name of the file to output to.
+    """
     with open(filename, "w") as f:
         json.dump(dump(), f, indent=True, sort_keys=True)
 
@@ -58,10 +66,20 @@ class ResourceSchema(ma.Schema):
 
 class Resource(db.Model, CRUDMixin, MarshmallowMixin):
     """
-    A Resource is an authoritative reference from which information is drawn.
+    A Resource is an authoritative information source from which evidence is drawn.
 
-    :param id: the database object identifier
-    :type id: integer
+    Usually, a Resource is an artifact like a newspaper article, a report, or another
+    document.  These documents usually have an associated URL.
+
+    Any time an Excerpt is used, that Excerpt must be directly quotable from a Resource.
+
+    :param int id: the database object identifier
+    :param str unique: alpha-numeric code for shorthand identifier
+    :param str name: what the resource is called
+    :param str url: the canonical URL for the resource
+    :param str publisher: the name of the institution reputationally backing this resource
+    :param str author: the name of the author(s)
+    :param str description: a short summary of this resource
     """
 
     __schema__ = ResourceSchema
@@ -88,8 +106,11 @@ class Excerpt(db.Model, CRUDMixin, MarshmallowMixin):
     """
     Description.
 
-    :param id: the database object identifier
-    :type id: integer
+    :param int id: the database object identifier
+    :param str unique: alpha-numeric code for shorthand identifier
+    :param str content: the actual quoted material of the excerpt
+    :param Resource resource: the Resource from which this excerpt comes
+    :param string xpath: the xpath leading to this excerpt within the Resource
     """
 
     __schema__ = ExcerptSchema
@@ -182,8 +203,11 @@ class Person(db.Model, CRUDMixin, MarshmallowMixin):
     """
     Description.
 
-    :param id: the database object identifier
-    :type id: integer
+    :param int id: the database object identifier
+    :param str unique: alpha-numeric code for shorthand identifier
+    :param str name: what the person is called
+    :param int :
+    :param int :
     """
 
     __schema__ = PersonSchema
@@ -215,8 +239,12 @@ class Acquaintance(db.Model, CRUDMixin, MarshmallowMixin):
     """
     Description.
 
-    :param id: the database object identifier
-    :type id: integer
+    :param int id: the database object identifier
+    :param int :
+    :param int :
+    :param int :
+    :param int :
+    :param int :
     """
 
     __schema__ = AcquaintanceSchema
@@ -258,8 +286,15 @@ class Place(db.Model, CRUDMixin, MarshmallowMixin):
     """
     Description.
 
-    :param id: the database object identifier
-    :type id: integer
+    :param int id: the database object identifier
+    :param str unique: alpha-numeric code for shorthand identifier
+    :param str name: what the place is called
+    :param int :
+    :param int :
+    :param int :
+    :param int :
+    :param int :
+    :param int :
     """
 
     __schema__ = PlaceSchema
@@ -302,8 +337,12 @@ class Item(db.Model, CRUDMixin, MarshmallowMixin):
     """
     Description.
 
-    :param id: the database object identifier
-    :type id: integer
+    :param int id: the database object identifier
+    :param str unique: alpha-numeric code for shorthand identifier
+    :param str name: what the item is called
+    :param int :
+    :param int :
+    :param int :
     """
 
     __schema__ = ItemSchema
@@ -340,8 +379,11 @@ class Group(db.Model, CRUDMixin, MarshmallowMixin):
     """
     Description.
 
-    :param id: the database object identifier
-    :type id: integer
+    :param int id: the database object identifier
+    :param str unique: alpha-numeric code for shorthand identifier
+    :param str name: what the group is called
+    :param int :
+    :param int :
     """
 
     __schema__ = GroupSchema
@@ -383,8 +425,16 @@ class Event(db.Model, CRUDMixin, MarshmallowMixin):
     """
     Description.
 
-    :param id: the database object identifier
-    :type id: integer
+    :param int id: the database object identifier
+    :param str unique: alpha-numeric code for shorthand identifier
+    :param str name: what the event is called
+    :param int :
+    :param int :
+    :param int :
+    :param int :
+    :param int :
+    :param int :
+    :param int :
     """
 
     __schema__ = EventSchema
