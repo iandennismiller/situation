@@ -48,6 +48,9 @@ def simple_situation():
     )
     assert item1
 
+    # Acquaintance.create(isa="friend", person=Person.find(name="Alice"),
+    #   acquainted=Person.create(name="Claire"))
+
 
 class BasicTestCase(TestCase):
 

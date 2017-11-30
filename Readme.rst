@@ -23,24 +23,23 @@ Overview
 --------
 
 The following is a full Situation in which Alice and Bob are members of a Sports Club.
-When this code is executed, a situation will be created within the database and will then be printed to the screen.
+When this code is executed, a situation will be created and then printed to the screen.
 
 ::
 
-    from situation import dump, Person, Group
+    from situation import dump, Person, Group, Acquaintance
     from situation.debug_app import quick
     with quick().app_context():
-        bob = Person.create(name="Bob")
-        alice = Person.create(name="Alice")
-        club = Group.create(name="Sports Club")
-        club.members.extend([bob, alice])
-        print(dump())
+        Group.create(name="Sports Club", members=[
+            Person.create(name="Alice"),
+            Person.create(name="Bob")])
+    print(dump())
 
 A situation is specified using Situation Modeling Language (SML).
-SML is like a Domain Specific Language for Situations built on top of Python.
+SML is like a Domain Specific Language for social situations built on top of Python.
 
 A Situation is actually a full database-driven `Flask-Diamond <http://flask-diamond.org>`_ application.
-As an application, this can be an extremely flexible data platform.
+As an application, this provides an extremely flexible data platform.
 
 Installation
 ^^^^^^^^^^^^
