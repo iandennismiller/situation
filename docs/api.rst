@@ -15,25 +15,25 @@ situation
 Resource
 ^^^^^^^^
 
-.. autoclass:: Resource(id, unique, name, url, publisher, author, description)
+.. autoclass:: Resource(unique, name, url, publisher, author, [description])
    :members:
 
 Excerpt
 ^^^^^^^
 
-.. autoclass:: Excerpt(id, unique, content, resource_id, [xpath])
+.. autoclass:: Excerpt(unique, content, resource_id, [xpath])
    :members:
 
 Person
 ^^^^^^
 
-.. autoclass:: Person
+.. autoclass:: Person(name, unique, alias, slug, [excerpts, events, places, possessions, properties, groups, acquaintances])
    :members:
 
 Acquaintance
 ^^^^^^^^^^^^
 
-.. autoclass:: Acquaintance
+.. autoclass:: Acquaintance(isa, excerpts, person, acquainted)
    :members:
 
 Place
@@ -45,7 +45,7 @@ Place
 Item
 ^^^^
 
-.. autoclass:: Item
+.. autoclass:: Item(unique, name, slug, excerpts, owners, [description])
    :members:
 
 Group

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # situation (c) Ian Dennis Miller
 
-from flask_diamond import Diamond
+from flask_diamond import Diamond, db
+import os
+import json
 
 
 class DebugApp(Diamond):
@@ -14,11 +16,23 @@ def create_app():
     application.facet("logs")
     application.facet("database")
     application.facet("marshalling")
-    # application.facet("blueprints")
-    # application.facet("accounts")
-    # application.facet("signals")
-    # application.facet("forms")
-    # application.facet("error_handlers")
-    # application.facet("request_handlers")
-    # application.facet("administration")
     return(application.app)
+
+
+def reset_db():
+    db.drop_all()
+    db.create_all()
+
+
+def quick():
+    tmp_settings()
+    app = create_app()
+    reset_db()
+    return(app)
+
+
+def tmp_settings():
+    os.environ["SETTINGS"] = json.dumps({
+        'LOG': '/tmp/out.log',
+        'SQLALCHEMY_DATABASE_URI': 'sqlite:////tmp/dev.db'
+    })

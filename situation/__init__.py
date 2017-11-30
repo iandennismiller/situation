@@ -110,7 +110,7 @@ class Excerpt(db.Model, CRUDMixin, MarshmallowMixin):
     :param str unique: alpha-numeric code for shorthand identifier
     :param str content: the actual quoted material of the excerpt
     :param Resource resource: the Resource from which this excerpt comes
-    :param string xpath: the xpath leading to this excerpt within the Resource
+    :param str xpath: the xpath leading to this excerpt within the Resource
     """
 
     __schema__ = ExcerptSchema
@@ -206,8 +206,15 @@ class Person(db.Model, CRUDMixin, MarshmallowMixin):
     :param int id: the database object identifier
     :param str unique: alpha-numeric code for shorthand identifier
     :param str name: what the person is called
-    :param int :
-    :param int :
+    :param str alias: that *other* thing the person is called
+    :param str slug: a URL-friendly identifier
+    :param [Excerpt] excerpts: null
+    :param [Event] events: null
+    :param [Place] places: null
+    :param [Item] possessions: null
+    :param [Place] properties: null
+    :param [Group] groups: null
+    :param [Acquaintance] acquaintances: null
     """
 
     __schema__ = PersonSchema
