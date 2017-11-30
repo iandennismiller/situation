@@ -32,7 +32,7 @@ def quick():
 
 
 def tmp_settings():
-    os.environ["SETTINGS"] = json.dumps({
+    os.environ["SETTINGS_JSON"] = json.dumps({
         'LOG': '/tmp/out.log',
         'SQLALCHEMY_DATABASE_URI': 'sqlite:////tmp/dev.db'
     })

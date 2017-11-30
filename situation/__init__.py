@@ -246,12 +246,10 @@ class Acquaintance(db.Model, CRUDMixin, MarshmallowMixin):
     """
     Description.
 
-    :param int id: the database object identifier
-    :param int :
-    :param int :
-    :param int :
-    :param int :
-    :param int :
+    :param str isa: null
+    :param Person person: null
+    :param Person acquainted: null
+    :param [Excerpt] excerpts: null
     """
 
     __schema__ = AcquaintanceSchema
@@ -296,12 +294,12 @@ class Place(db.Model, CRUDMixin, MarshmallowMixin):
     :param int id: the database object identifier
     :param str unique: alpha-numeric code for shorthand identifier
     :param str name: what the place is called
-    :param int :
-    :param int :
-    :param int :
-    :param int :
-    :param int :
-    :param int :
+    :param str description: null
+    :param str address: null
+    :param float lat: null
+    :param float lon: null
+    :param [Person] owners: null
+    :param [Excerpt] excerpts: null
     """
 
     __schema__ = PlaceSchema
@@ -347,9 +345,9 @@ class Item(db.Model, CRUDMixin, MarshmallowMixin):
     :param int id: the database object identifier
     :param str unique: alpha-numeric code for shorthand identifier
     :param str name: what the item is called
-    :param int :
-    :param int :
-    :param int :
+    :param str description: null
+    :param [Person] owners: null
+    :param [Excerpt] excerpts: null
     """
 
     __schema__ = ItemSchema
@@ -389,8 +387,8 @@ class Group(db.Model, CRUDMixin, MarshmallowMixin):
     :param int id: the database object identifier
     :param str unique: alpha-numeric code for shorthand identifier
     :param str name: what the group is called
-    :param int :
-    :param int :
+    :param [Person] members: null
+    :param [Excerpt] excerpts: null
     """
 
     __schema__ = GroupSchema
@@ -435,13 +433,13 @@ class Event(db.Model, CRUDMixin, MarshmallowMixin):
     :param int id: the database object identifier
     :param str unique: alpha-numeric code for shorthand identifier
     :param str name: what the event is called
-    :param int :
-    :param int :
-    :param int :
-    :param int :
-    :param int :
-    :param int :
-    :param int :
+    :param str description: null
+    :param Place place: null
+    :param bool phone: *true* if this event is a phone call
+    :param DateTime timestamp: null
+    :param [Person] actors: null
+    :param [Excerpt] excerpts: null
+    :param [Item] items: null
     """
 
     __schema__ = EventSchema
