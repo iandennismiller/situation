@@ -140,6 +140,7 @@ html_theme = 'alabaster'
 # documentation.
 
 html_theme_options = {
+    'logo': 'geese.png',
     'github_button': False,
     'show_powered_by': False,
     # 'analytics_id': "",

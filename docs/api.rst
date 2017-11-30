@@ -1,6 +1,9 @@
 API
 ===
 
+This is the **situation** Application Programming Interface (API).
+This document provides a reference for using **situation** to write your own code.
+
 situation
 ---------
 
