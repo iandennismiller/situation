@@ -69,7 +69,6 @@ class BasicTestCase(TestCase):
         "ensure the minimum test works"
         simple_situation()
 
-    @attr("single")
     def test_marshall(self):
         simple_situation()
         resource1 = Resource.find(name="Headline news for November 23")
@@ -89,8 +88,16 @@ class BasicTestCase(TestCase):
         print("group", group1.dump(), "\n---")
 
         # print(item1.as_hash())
-
         # assert False
+
+    @attr("single")
+    def test_dot(self):
+        simple_situation()
+
+        from .io import build_events_dot, save_events_dot
+        dot_str = build_events_dot()
+        assert dot_str
+        save_events_dot("/tmp/out.dot")
 
     @attr("skip")
     def test_skip(self):

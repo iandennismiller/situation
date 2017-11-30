@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # situation (c) Ian Dennis Miller
 
-import json
 import string
 import random
 from flask_diamond import db
@@ -24,37 +23,6 @@ def id_generator(size=8, chars=None):
     if chars is None:
         chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
     return ''.join(random.choice(chars) for x in range(size))
-
-
-def dump():
-    """
-    Build a dictionary containing the entire Situation.
-
-    :returns: a Dict with the situation as nested Dictionaries.
-    """
-    "save all the people and everything else"
-    return({
-        "persons": [p.dump() for p in Person.query.order_by(Person.id).all()],
-        "acquaintances": [a.dump() for a in Acquaintance.query.order_by(Acquaintance.person_id,
-            Acquaintance.acquainted_id).all()],
-        "groups": [g.dump() for g in Group.query.order_by(Group.id).all()],
-        "places": [p.dump() for p in Place.query.order_by(Place.id).all()],
-        "items": [i.dump() for i in Item.query.order_by(Item.id).all()],
-        "events": [e.dump() for e in Event.query.order_by(Event.id).all()],
-        # "details": [d.dump() for d in Detail.query.order_by(Detail.id).all()],
-        "excerpts": [e.dump() for e in Excerpt.query.order_by(Excerpt.id).all()],
-        "resources": [r.dump() for r in Resource.query.order_by(Resource.id).all()],
-    })
-
-
-def save(filename):
-    """
-    Write the Situation to a JSON file.
-
-    :param str filename: the name of the file to output to.
-    """
-    with open(filename, "w") as f:
-        json.dump(dump(), f, indent=True, sort_keys=True)
 
 
 class Resource(db.Model, CRUDMixin, MarshmallowMixin):
@@ -140,7 +108,14 @@ class Person(db.Model, CRUDMixin, MarshmallowMixin):
     unique = db.Column(db.String(255), unique=True, default=id_generator)
     excerpts = db.relationship('Excerpt', secondary="persons_excerpts", lazy='dynamic')
 
-    def isa(self, isa_type, of=None):
+    def isa(self, isa_type, of):
+        """
+        A Person is a type of Acquaintance with the Acquainted.
+
+        alice = Person.find(name="Alice")
+        bob = Person.find(name="Bob")
+        bob.isa("friend", of=alice)
+        """
         e = Acquaintance(person=self, isa=isa_type, acquainted=of)
         result = e.save()
         return result

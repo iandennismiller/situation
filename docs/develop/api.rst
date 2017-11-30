@@ -9,10 +9,6 @@ situation
 
 .. automodule:: situation
 
-.. autofunction:: dump
-
-.. autofunction:: save
-
 .. autofunction:: id_generator
 
 Resource
@@ -62,3 +58,16 @@ Event
 
 .. autoclass:: Event(name, [description, place, phone, timestamp, actors, excerpts, items])
    :members:
+
+situation.io
+------------
+
+.. automodule:: situation.io
+
+.. autofunction:: dump
+
+.. autofunction:: save
+
+.. autofunction:: build_events_dot
+
+.. autofunction:: save_events_dot

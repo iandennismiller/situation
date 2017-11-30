@@ -50,3 +50,9 @@ Flask-Diamond provides helpful support, including database back-end, web-based d
 Situation size is bound by disk size, not memory size, because the situation is stored using a database engine like Postgresql or embedded sqlite3.
 Anything described using *Situation* can be subsequently queried in a variety of ways, including directly with SQL.
 Consequently, situation size is practically unlimited and situations can be queried effectively - even at scale.
+
+What can a Situation do?
+------------------------
+
+A situation supports analysis; ask it questions.
+The pattern I've used is to specify a situation, then dump it as a JSON object to visualize.
