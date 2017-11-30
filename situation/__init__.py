@@ -64,13 +64,15 @@ class Resource(db.Model, CRUDMixin, MarshmallowMixin):
     Usually, a Resource is an artifact like a newspaper article, a report, or another
     document.  These documents usually have an associated URL.
 
-    Any time an Excerpt is used, that Excerpt must be directly quotable from a Resource.
+    There may be many Resource from a single publisher or organization.  Currently,
+    the publisher is not a special component of the situation ontology.  If it is
+    necessary to include a publisher in a model, represent it as a Group.
 
     :param int id: the database object identifier
     :param str unique: alpha-numeric code for shorthand identifier
-    :param str name: what the resource is called
+    :param str name: what the resource is called (usually the title or headline)
     :param str url: the canonical URL for the resource
-    :param str publisher: the name of the institution reputationally backing this resource
+    :param str publisher: the name of the institution whose reputation backs this resource
     :param str author: the name of the author(s)
     :param str description: a short summary of this resource
     """
@@ -78,7 +80,7 @@ class Resource(db.Model, CRUDMixin, MarshmallowMixin):
     __schema__ = ResourceSchema
     id = db.Column(db.Integer, primary_key=True)
     unique = db.Column(db.String(255), unique=True, default=id_generator)
-    name = db.Column(db.String(4096))
+    name = db.Column(db.String(4096), nullable=False)
     url = db.Column(db.String(4096))
     publisher = db.Column(db.String(4096))
     author = db.Column(db.String(4096))
@@ -90,7 +92,9 @@ class Resource(db.Model, CRUDMixin, MarshmallowMixin):
 
 class Excerpt(db.Model, CRUDMixin, MarshmallowMixin):
     """
-    Description.
+    An Excerpt is a direct quote that comes from any Resource.
+
+    Any time an Excerpt is used, that Excerpt must be directly quotable from a Resource.
 
     :param int id: the database object identifier
     :param str unique: alpha-numeric code for shorthand identifier
@@ -113,25 +117,25 @@ class Excerpt(db.Model, CRUDMixin, MarshmallowMixin):
 
 class Person(db.Model, CRUDMixin, MarshmallowMixin):
     """
-    Description.
+    A Person is an actor in a Situation.
 
     :param int id: the database object identifier
     :param str unique: alpha-numeric code for shorthand identifier
     :param str name: what the person is called
     :param str alias: that *other* thing the person is called
     :param str slug: a URL-friendly identifier
-    :param [Excerpt] excerpts: null
-    :param [Event] events: null
-    :param [Place] places: null
-    :param [Item] possessions: null
-    :param [Place] properties: null
-    :param [Group] groups: null
-    :param [Acquaintance] acquaintances: null
+    :param [Excerpt] excerpts: excerpts related to this Person
+    :param [Event] events: events related to this Person
+    :param [Place] places: places related to this Person
+    :param [Item] possessions: items related to this Person
+    :param [Place] properties: places owned by this Person
+    :param [Group] groups: groups this Person is a member of
+    :param [Acquaintance] acquaintances: people this Person knows
     """
 
     __schema__ = PersonSchema
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), nullable=False)
     alias = db.Column(db.String(255))
     unique = db.Column(db.String(255), unique=True, default=id_generator)
     excerpts = db.relationship('Excerpt', secondary="persons_excerpts", lazy='dynamic')
@@ -147,12 +151,15 @@ class Person(db.Model, CRUDMixin, MarshmallowMixin):
 
 class Acquaintance(db.Model, CRUDMixin, MarshmallowMixin):
     """
-    Description.
+    An Acquaintance is a relationship between Persons.
 
-    :param str isa: null
-    :param Person person: null
-    :param Person acquainted: null
-    :param [Excerpt] excerpts: null
+    This represents a directed edge, so a separate Acquaintance must be created
+    to establish reciprocity.
+
+    :param str isa: a description of the type of relationship
+    :param Person person: the "source" of the acquaintance
+    :param Person acquainted: the "target" of the acquaintance
+    :param [Excerpt] excerpts: excerpts related to this Acquaintance
     """
 
     __schema__ = AcquaintanceSchema
@@ -177,23 +184,23 @@ class Acquaintance(db.Model, CRUDMixin, MarshmallowMixin):
 
 class Place(db.Model, CRUDMixin, MarshmallowMixin):
     """
-    Description.
+    A Place is a location.
 
     :param int id: the database object identifier
     :param str unique: alpha-numeric code for shorthand identifier
     :param str name: what the place is called
-    :param str description: null
-    :param str address: null
-    :param float lat: null
-    :param float lon: null
-    :param [Person] owners: null
-    :param [Excerpt] excerpts: null
+    :param str description: a short summary of this place
+    :param str address: a human-readable postal address
+    :param float lat: latitude
+    :param float lon: longitudel
+    :param [Person] owners: the property owner(s)
+    :param [Excerpt] excerpts: excerpts related to this Place
     """
 
     __schema__ = PlaceSchema
     id = db.Column(db.Integer, primary_key=True)
     unique = db.Column(db.String(255), unique=True, default=id_generator)
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(8**7))
     address = db.Column(db.String(4096))
     lat = db.Column(db.Float())
@@ -208,20 +215,20 @@ class Place(db.Model, CRUDMixin, MarshmallowMixin):
 
 class Item(db.Model, CRUDMixin, MarshmallowMixin):
     """
-    Description.
+    An item is any "thing" that is work describing.
 
     :param int id: the database object identifier
     :param str unique: alpha-numeric code for shorthand identifier
     :param str name: what the item is called
-    :param str description: null
-    :param [Person] owners: null
-    :param [Excerpt] excerpts: null
+    :param str description: a short summary of this item
+    :param [Person] owners: the property owner(s)
+    :param [Excerpt] excerpts: excerpts related to this Item
     """
 
     __schema__ = ItemSchema
     id = db.Column(db.Integer, primary_key=True)
     unique = db.Column(db.String(255), unique=True, default=id_generator)
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(8**7))
     owners = db.relationship('Person', secondary="items_owners", lazy='dynamic', backref="items")
     excerpts = db.relationship('Excerpt', secondary="items_excerpts", lazy='dynamic')
@@ -232,19 +239,22 @@ class Item(db.Model, CRUDMixin, MarshmallowMixin):
 
 class Group(db.Model, CRUDMixin, MarshmallowMixin):
     """
-    Description.
+    A Group is a collection of Persons who are associated with one another.
+
+    Membership in a group implies a many-to-many relationship between the members.
+    A group is different from an Acquaintance; it is bi-directional, not uni-directional.
 
     :param int id: the database object identifier
     :param str unique: alpha-numeric code for shorthand identifier
     :param str name: what the group is called
-    :param [Person] members: null
-    :param [Excerpt] excerpts: null
+    :param [Person] members: people who are members of this Group
+    :param [Excerpt] excerpts: excerpts related to this Group
     """
 
     __schema__ = GroupSchema
     id = db.Column(db.Integer, primary_key=True)
     unique = db.Column(db.String(255), unique=True, default=id_generator)
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), nullable=False)
     members = db.relationship('Person', secondary="groups_members", lazy='dynamic',
         backref="groups")
     excerpts = db.relationship('Excerpt', secondary="groups_excerpts", lazy='dynamic')
@@ -255,24 +265,24 @@ class Group(db.Model, CRUDMixin, MarshmallowMixin):
 
 class Event(db.Model, CRUDMixin, MarshmallowMixin):
     """
-    Description.
+    An Event is an occurrence that somehow alters the Situation.
 
     :param int id: the database object identifier
     :param str unique: alpha-numeric code for shorthand identifier
     :param str name: what the event is called
-    :param str description: null
+    :param str description: a short summary of this item
     :param Place place: null
     :param bool phone: *true* if this event is a phone call
     :param DateTime timestamp: null
     :param [Person] actors: null
-    :param [Excerpt] excerpts: null
+    :param [Excerpt] excerpts: excerpts related to this Event
     :param [Item] items: null
     """
 
     __schema__ = EventSchema
     id = db.Column(db.Integer, primary_key=True)
     unique = db.Column(db.String(255), unique=True, default=id_generator)
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(8**7))
     place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
     place = db.relationship("Place", backref="events")
