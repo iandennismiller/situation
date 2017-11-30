@@ -1,12 +1,20 @@
 .. include:: ../Readme.rst
 
+Introduction
+------------
+
+.. toctree::
+    :maxdepth: 1
+
+    intro/situation
+
 Development
 -----------
 
 .. toctree::
     :maxdepth: 3
 
-    api
+    develop/api
 
 About
 -----
@@ -14,10 +22,6 @@ About
 .. toctree::
     :maxdepth: 1
 
-    license
-    changelog
-
-Credits
--------
-
-Goose image: https://www.flickr.com/photos/internetarchivebookimages/14579776299/
+    about/changelog
+    about/license
+    about/credits
