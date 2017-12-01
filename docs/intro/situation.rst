@@ -40,11 +40,11 @@ The same situational network is implied by these statements.
 
 I speculate that an impediment to situation construction with a computer display is the difficulty of working with layers of networks.
 
-Flask-Diamond
--------------
+Data Science Application
+------------------------
 
-A Situation must be hosted upon a custom Flask-Diamond application.
-This provides a broad platform for developing deep integrations with your data pipeline.
+A Situation must be hosted upon a custom `Flask-Diamond <http://flask-diamond.org>`_ application.
+This provides a broad platform for developing deep integrations with your data science pipeline.
 Flask-Diamond provides helpful support, including database back-end, web-based data browser, and REST API building.
 
 Situation size is bound by disk size, not memory size, because the situation is stored using a database engine like Postgresql or embedded sqlite3.
@@ -56,3 +56,43 @@ What can a Situation do?
 
 A situation supports analysis; ask it questions.
 The pattern I've used is to specify a situation, then dump it as a JSON object to visualize.
+
+Diamonds
+--------
+
+.. Rauthmann, J. F., Gallardo-Pujol, D., Guillaume, E. M., Todd, E., Nave, C. S., Sherman, R. A., … Funder, D. C. (2014). The Situational Eight DIAMONDS: A taxonomy of major dimensions of situation characteristics. Journal of Personality and Social Psychology, 107(4), 677.
+.. Duty, Intellect, Adversity, Mating, pOsitivity, Negativity, Deception, and Sociality
+
+Predicate Logic
+---------------
+
+There already exist formal notations for specifying entities, their memberships, and their interrelationships.
+
+Semantic Web
+^^^^^^^^^^^^
+
+Resource Description Framework (RDF), a component of the so-called "Semantic Web," permits expressions that could be applied to social situation description.
+The general form, "Subject is Adjective with/about Object," may be expressed with prefix notation - a predicate - as Adjective(Subject, Object).
+Thus, the representation of "Alice is Friends with Bob" yields Friends(Alice, Bob).
+This "Friends" predicate provides a language primitive for constructing a social network.
+
+The Ontological Web Language (OWL) is a framework for specifying categories and groups.
+
+RDF already provides the necessary grammar for supporting expressions of this form, so many aspects of a Situation ought to be expressible using RDF.
+
+Situations ought to be representable with RDF and OWL.
+
+There are several drawbacks to using the Semantic Web as a platform for situation modeling.
+
+The languages are quite "heavy" in the sense that they seek to provide solutions for many problem domains.
+This is a poor fit for the current problem which has a very narrow domain and therefore doesn't strictly require language support for other capabilities.
+
+We do not control the languages.
+
+XML and Semantic Web tools are inconsistent.
+I've found it's unpleasant to work directly with XML.
+It's inconvenient to build custom GUI components to simplify XML data entry.
+GUI data entry necessarily constrains the range if input, so most of the expressive capability of XML is not available during the data entry process, anyway.
+Analysis upon raw XML is virtually impossible; it must be transformed to another format (e.g. CSV) in order to interchange with an analysis pipeline.
+
+Other representations for RDF, particularly triples notation, are concise and look surprisingly similar to Situation.
