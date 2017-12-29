@@ -23,6 +23,20 @@ The constructs that typically underly a situation include people and relationshi
 These commonly-used entities are formalized by the *Situation* library.
 Advantages to using a DSL include specificity and conciseness.
 
+Language Primitives
+^^^^^^^^^^^^^^^^^^^
+
+The language is described in detail in :doc:`API` documentation
+
+- Resource
+- Excerpt
+- Person
+- Acquaintance
+- Place
+- Item
+- Group
+- Event
+
 Networked nature of Situations
 ------------------------------
 
@@ -96,3 +110,19 @@ GUI data entry necessarily constrains the range if input, so most of the express
 Analysis upon raw XML is virtually impossible; it must be transformed to another format (e.g. CSV) in order to interchange with an analysis pipeline.
 
 Other representations for RDF, particularly triples notation, are concise and look surprisingly similar to Situation.
+
+Graph Interchange
+-----------------
+
+Dot/GraphViz
+^^^^^^^^^^^^
+
+Gephi
+^^^^^
+
+NetworkX
+^^^^^^^^
+
+Neo4J
+^^^^^
+
